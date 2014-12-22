@@ -11,298 +11,21 @@
 #include <cstdio>
 #include <cstring>
 #include <math.h>
+#include <string>
+#include "hash.h"
+#include "utilities.h"
 using namespace std;
 
 
 #define PRIME (23099*2 + 1)
 #define PRIM_ROOT (23099) // The value is such so that the values in the program never exceed the maximum range of int
-#define SYS_PASSWORD "qwerty"
+const string SYS_PASSWORD = "qwerty";
 
 enum Status {
     SUBMIT = 1,
     SAVE = 0
 };
 // int psi(int x);
-
-//HEADER 1*********************************
-int FastPower(int g, int A, int N);
-int stringLength(const char* arr);
-int Mypsi(int x);
-void copy(char S1[], char S2[], int LENGTH);
-void AND(char S1[], char S2[], int LENGTH);
-char HexForm2(int x);
-void HexForm(char arr[]);
-void Mod(char S1[], char S2[], int LENGTH); // Does not append '\0' at the end of the string
-void intoBinary(char arr[], int byte, int LENGTH);
-//void SpecificValues(string &S1, int LENGTH, char* ptr, int phi);
-void Binary(char arr[], int x, int ofLength);
-//void SpecificPermute(char S1[], int LENGTH, char* ptr, int phi);
-void Concat(char S1[], int Start, char S2[]);
-char* Hex(char x[]);
-char* HashDigest(char* arr, int lambda, int ClassSize);
-void Into4BitBinary(char arr[], int x);
-void XOR(char arr[], char arr2[], int LENGTH);
-void Encrypt(char* ptr, char Key[], int classSize);
-void Decrypt(char* ptr, char Key[], int classSize);
-void Copy(char* tocopyto, char* tocopyfrom, int ClassSize);
-
-int FastPower(int g, int A, int N) {
-	int a = g, b = 1;
-	for(;A > 0;) {
-		if (A%2 == 1) b = (b*a)%N;
-		a = (a*a)%N;
-		A = A/2;
-	}
-	return b;
-}
-
-int Mypsi(int x, int a, int p) {
-	return (FastPower(a,x,p));
-}
-
-int stringLength(const char* arr) {
-    int i;
-    for (i = 0; arr[i] != '\0'; i++) {}
-    
-    return i;
-}
-
-void copy(char S1[], char S2[], int LENGTH) {
-    // Copies String S2 into S1 till length LENGTH
-    
-	for (int i = 0; i < LENGTH; i++)
-		S1[i] = S2[i];
-}
-
-void AND(char S1[], char S2[], int LENGTH) {
-    // Bitwise AND for strings
-    
-	for(int i = 0; i < LENGTH; i++) {
-		if (S1[i] == '1' && S2[i] == '0') S1[i] = '0';
-		else if (S1[i] == '1' && S2[i] == '1') S1[i] = '1';
-		else if (S1[i] == '0' && S2[i] == '0') S1[i] = '1';
-		else if (S1[i] == '0' && S2[i] == '1') S1[i] = '0';
-	}
-}
-
-char HexForm2(int x) {
-    // To convert integer into its hexadecimal character, i.e. 0123456789abcdef
-    
-	x += 48;
-	if (x >= 58 && x <= 63) x += 39;
-	
-	return ( (char)x );
-}
-
-void HexForm(char arr[]) {
-    // TO CONVERT STRING TO HEXADECIMAL CHARACTERS, i.e. 0123456789abcdef
-    
-	int LENGTH = stringLength(arr);
-	for (int i = 0; i < LENGTH; i++) {
-		arr[i] += 48;
-		if (arr[i] >= 58 && arr[i] <= 63) arr[i] += 39;
-	}
-}
-
-void Mod(char S1[], char S2[], int LENGTH) {
-    // To mod the sum of each individual corresponding character strings S1 and S2 by 16 upto LENGTH-1
-    
-	int* S3 = new int[LENGTH];
-	int* S4 = new int[LENGTH];
-	for(int i = 0; i < LENGTH; i++) {
-		if (S1[i] >= 48 && S1[i] <= 57) S3[i] = S1[i] - 48;
-		else if (S1[i] >= 97 && S1[i] <= 102) S3[i] = S1[i] - 87;
-		
-		if (S2[i] >= 48 && S2[i] <= 57) S4[i] = S2[i] - 48;
-		else if (S2[i] >= 97 && S2[i] <= 102) S4[i] = S2[i] - 87;
-	}
-    
-    
-	for(int i = 0; i < LENGTH; i++) {
-		S3[i] = (S3[i] + S4[i]) % 16;
-		S1[i] = HexForm2(S3[i]);
-	}
-    
-	delete[] S3;
-	delete[] S4;
-}
-
-void intoBinary(char arr[], int byte, int LENGTH) {
-    // byte is the byte to be converted into a binary string of length LENGTH, i.e. in this case lambda*4
-    // Uses Binary() function to make the pseudorandom stream into a 4 bit binary string
-    // puts resultant into arr
-    // Converts one byte into an entire pseudorandom binary stream of the required length by going 4 bits at a time and concatenating them.
-	char temp[5];
-	for(int i = 0; i < LENGTH/4; i++) {
-		byte = FastPower(FastPower(PRIM_ROOT, i+1, PRIME), byte, PRIME); // Pseudorandom generator
-		Into4BitBinary(temp, byte);
-		Concat(arr, 4*i, temp);
-	}
-	arr[LENGTH] = '\0';
-}
-
-void Binary(char arr[], int x, int ofLength) {
-	int remainder;
-	for (int i = (ofLength - 1); i >= 0; i--) {
-		remainder = x%2;
-		x = x/2;
-		arr[i] = remainder + 48;
-	}
-	arr[ofLength] = '\0'; // BECAUSE Hex() checks String Lenth and then operates!!!
-}
-
-void Concat(char S1[], int Start, char S2[]) {
-    // Concatenates S1 with the values of S2 starting from index Start to 4 values after it
-    
-	for (int i = 0; i < 4; i++)
-		S1[Start+i] = S2[i];
-}
-
-char* Hex(char x[]) {
-    // Returns precise hexadecimal equivalent string of binary string x
-    
-    int LengthofBinary = stringLength(x), lambda;
-    
-    if (LengthofBinary % 4 == 0) lambda = LengthofBinary/4;
-	else lambda = LengthofBinary/4 + 1;
-    
-    int sum = 0, k;
-	char* Hexed = new char[lambda+1];
-	
-	for(int i = LengthofBinary - 1, j = 1; i >= 0; i = i - 4, j++) {
-		sum = 0;
-		for(k = 0; k < 4; k++) {
-			if ( (i-k) < 0 ) break; //so that if last bit is reached the loop exits
-			sum += pow(2,k) * (x[i-k] - 48);
-		}
-		Hexed[lambda-j] = HexForm2(sum);
-	}
-	
-	Hexed[lambda] = '\0';
-	return Hexed;
-}
-
-char* HashDigest(char* arr, int lambda, int ClassSize = 0) {
-    
-    /*	This Hash function converts the required value, i.e. the object of any misc data type, or a string by utilizing a pointer to the first byte of the
-     data.
-     It then starts converting each byte into a binary string of length lambda and then to hexadecimal form using the psi pseudorandom number generator and
-     keeps modding the value to a FinalHash string which the function then returns.
-     
-     SECURITY depends on the security of the PRNG and the fact that you dont know what permutations took place evry time without knowing the main string
-     */
-    
-    
-	char* ptr = arr;
-    int phi;
-    int fordifference = FastPower(lambda,2,PRIME);
-	if (ClassSize == 0)
-		phi = stringLength(arr);
-	else
-		phi = ClassSize;
-    
-	char* BinaryString = new char[4*lambda + 1];
-	char* Hexed;
-	char* FinalHash = new char[lambda + 1];
-	
-	//Gives an initial value to FinalHash based on the length of the object or string being hashed
-	for (int i = 0; i < lambda; i++) FinalHash[i] = '0'; //FinalHash[lambda] = '\0';
-	intoBinary(BinaryString, phi, 4*lambda);
-	Hexed = Hex(BinaryString);
-	Mod(FinalHash, Hexed, lambda);
-	delete[] Hexed;
-	
-	for(int i = 0; i < phi; i++) {
-		// Converts the byte to binary of length 4*lambda
-		intoBinary(BinaryString, *ptr + i + fordifference,4*lambda); // so thqt each ele gets a diff value on the virtue of its position and lambda
-		
-        //SpecificPermute(BinaryString, strlen(BinaryString), arr, strlen(arr));
-		Hexed = Hex(BinaryString);
-		
-        //SpecificPermute(Hexed, strlen(Hexed), arr, strlen(arr));
-		Mod(FinalHash, Hexed, lambda);
-		ptr++;
-		delete[] Hexed;
-	}
-	
-	FinalHash[lambda] = '\0'; //To make it a readable string
-	delete[] BinaryString;
-	return FinalHash;
-}
-
-void Into4BitBinary(char arr[], int x) {
-    // Converts an integer to a binary string of length 4 bits by XORing 4 bits at a time of the integer with each other.
-    
-	for(int i = 0; i < 4; i++) arr[i] = '0';
-	char temparr[4];
-	
-	int binaryequivalent, tempx = x, noofiterations;
-	for(binaryequivalent = 0; tempx != 0; binaryequivalent++) tempx = tempx/2;
-	
-	if (binaryequivalent%4 == 0) noofiterations = binaryequivalent/4;
-	else noofiterations = binaryequivalent/4 + 1;
-	
-	for(int i = 0; i < noofiterations; i++) {
-        // To create a 4 bit string from the current value of the integer
-		for(int j = 3; j >= 0; j--) {
-			if (x == 0)
-				temparr[j] = '0';
-			else {
-				temparr[j] = x%2 + 48;
-				x = x/2;
-			}
-		}
-		XOR(arr,temparr, 4);
-	}
-	arr[4] = '\0';
-}
-
-void XOR(char arr[], char arr2[], int LENGTH) {
-    // Computes XOR operation on arr1 and arr2
-	for(int i = 0; i < LENGTH; i++) {
-		if ( (arr[i] == '0' && arr2[i] == '1') || (arr[i] =='1' && arr2[i] == '0') )
-			arr[i] = '1';
-		else
-			arr[i] = '0';
-	}
-}
-
-void Encrypt(char* ptr, const char* Key, int classSize = 0) {
-    // TO ENCRYPT THE CONTENTS OF AN OBJECT BITWISE USING KEY PASSWORD
-    int length;
-    if (classSize == 0)
-        length = stringLength(ptr);
-    else
-        length = classSize;
-    
-	for (int i = 0; i < length; i++) {
-		*ptr = ((*ptr + Key[i%6]) % 256) - 128; // Because range of char is -128 to 127
-		ptr++;
-	}
-}
-
-void Decrypt(char* ptr, const char* Key, int classSize = 0) {
-    // TO DECRYPT THE CONTENTS OF AN OBJECT BITWISE USING KEY PASSWORD
-    int length;
-    if (classSize == 0)
-        length = stringLength(ptr);
-    else
-        length = classSize;
-    
-	for (int i = 0; i < length; i++) {
-		*ptr = ((*ptr - Key[i%6]) % 256) - 128; // Because range of char is -128 to 127
-		ptr++;
-	}
-}
-
-void Copy(char* tocopyto, char* tocopyfrom, int ClassSize) {
-    // TO COPY THE CONTENTS OF "tocopyfrom" TO "tocopyto" BITWISE
-	for (int i = 0; i < ClassSize; i++) {
-		*tocopyto = *tocopyfrom;
-		tocopyfrom++;
-		tocopyto++;
-	}
-}
 
 //HEADER 2*********************************
 class Personal_Details {
@@ -778,8 +501,8 @@ void Packet::save()
             
             if (!strcmp(UsrName, find.UsrName))
             {
-                Encrypt(UsrName, SYS_PASSWORD);
-                Encrypt((char*)&App, SYS_PASSWORD, sizeof(Applicant));
+                Encrypt(UsrName, SYS_PASSWORD.c_str());
+                Encrypt((char*)&App, SYS_PASSWORD.c_str(), sizeof(Applicant));
                 file.seekp(position);
                 
                 file.write((char*)this, sizeof(Packet));
@@ -793,8 +516,8 @@ void Packet::save()
 
     if (!file) {
         fout.open("saved.dat", ios::out | ios::binary);
-        Encrypt(UsrName, SYS_PASSWORD);
-        Encrypt((char*)&App, SYS_PASSWORD, sizeof(Applicant));
+        Encrypt(UsrName, SYS_PASSWORD.c_str());
+        Encrypt((char*)&App, SYS_PASSWORD.c_str(), sizeof(Applicant));
         fout.write((char*)this, sizeof(Packet));
         fout.close();
     }
@@ -807,13 +530,13 @@ void Packet::submit()
     application.App = this -> App;
     
     // For verification through a digital signature
-    char* temp = HashDigest((char*)&application.App, 64, sizeof(Applicant));
+    char* temp = hashFunction.HashDigest((char*)&application.App, 64, sizeof(Applicant));
     strcpy(application.digitalSignature, temp);
     delete[] temp;
     
     this -> App.submitted = 1;
 
-    Encrypt((char*)&application, SYS_PASSWORD, sizeof(SubmittedPacket));
+    Encrypt((char*)&application, SYS_PASSWORD.c_str(), sizeof(SubmittedPacket));
     
     fout.write((char*)&application, sizeof(SubmittedPacket));
     fout.close();
@@ -829,8 +552,8 @@ void Manager::viewAllApps()
     if (fin) {
         while (!fin.eof()) {
             fin.read((char*)&appToView, sizeof(SubmittedPacket));
-            Decrypt((char*)&appToView, SYS_PASSWORD, sizeof(SubmittedPacket));
-            temp = HashDigest((char*)&appToView.App, 64, sizeof(Applicant));
+            Decrypt((char*)&appToView, SYS_PASSWORD.c_str(), sizeof(SubmittedPacket));
+            temp = hashFunction.HashDigest((char*)&appToView.App, 64, sizeof(Applicant));
             
             if (fin.eof()) break;
 
@@ -866,8 +589,8 @@ void Manager::viewApp()
         
         while (!fin.eof()) {
             fin.read((char*)&appToView, sizeof(SubmittedPacket));
-            Decrypt((char*)&appToView, SYS_PASSWORD, sizeof(SubmittedPacket));
-            temp = HashDigest((char*)&appToView.App, 64, sizeof(Applicant));
+            Decrypt((char*)&appToView, SYS_PASSWORD.c_str(), sizeof(SubmittedPacket));
+            temp = hashFunction.HashDigest((char*)&appToView.App, 64, sizeof(Applicant));
             
             if ((!strcmp(appToView.digitalSignature, temp)) == 0 && (!strcmp(appToView.App.uName, username))) {
                 cout << "\nThe username " << appToView.App.uName << "'s application has been corrupted.\n";
@@ -965,7 +688,7 @@ void handle()
                 cout << "Enter Master System Password : ";
                 cin.ignore();
                 cin.get(pwd, 16);
-                if (!strcmp(pwd, SYS_PASSWORD)) {
+                if (!strcmp(pwd, SYS_PASSWORD.c_str())) {
                     newManager();
                 } else {
                     cout << "Wrong Password" << endl;
@@ -995,15 +718,15 @@ void handleApplicantLogin()
     cin.ignore();
     cin.get(upwd, 16);
     
-    char* upwdhash = HashDigest(upwd, 64);
+    char* upwdhash = hashFunction.HashDigest(upwd, 64);
     
     if (file) {
         while (!file.eof()) {
             file.read((char*)&application, sizeof(Packet));
             if (!strcmp(application.PwdHash, upwdhash)) {
-                Decrypt(application.UsrName, SYS_PASSWORD);
+                Decrypt(application.UsrName, SYS_PASSWORD.c_str());
                 if (!strcmp(application.UsrName, uname)) {
-                    Decrypt((char*)&application.App, SYS_PASSWORD, sizeof(Applicant));
+                    Decrypt((char*)&application.App, SYS_PASSWORD.c_str(), sizeof(Applicant));
                     toSubmit = application.App.handler();
                     
                     if (toSubmit == SAVE)
@@ -1043,15 +766,15 @@ void handleManagerLogin()
     cin.ignore();
     cin.get(upwd, 16);
     
-    upwdhash = HashDigest(upwd, 64);
+    upwdhash = hashFunction.HashDigest(upwd, 64);
     
     if (fin) {
         while (!fin.eof()) {
             fin.read((char*)&manager, sizeof(ManagerPacket));
-            Decrypt(manager.UsrName, SYS_PASSWORD);
+            Decrypt(manager.UsrName, SYS_PASSWORD.c_str());
             if (!strcmp(manager.UsrName, uname)) {
                 if (!strcmp(manager.PwdHash, upwdhash)) {
-                    Decrypt((char*)&manager.App, SYS_PASSWORD, sizeof(manager.App));
+                    Decrypt((char*)&manager.App, SYS_PASSWORD.c_str(), sizeof(manager.App));
                     manager.App.handler();
                     flag = 1;
                 }
@@ -1083,7 +806,7 @@ void newApplicant()
     if (fin) {
         while (!fin.eof()) {
             fin.read((char*)&Check, sizeof(Check));
-            Decrypt(Check.UsrName, SYS_PASSWORD);
+            Decrypt(Check.UsrName, SYS_PASSWORD.c_str());
             if (!strcmp(Check.UsrName, UName)) {
                 flag = 0;
                 break;
@@ -1099,9 +822,9 @@ void newApplicant()
         cin.ignore();
         cin.get(UPwd, 16);
         
-        UPwdHash = HashDigest(UPwd, 64);
+        UPwdHash = hashFunction.HashDigest(UPwd, 64);
         strcpy(NewApplicant.App.uName, UName);
-        Encrypt(UName, SYS_PASSWORD);
+        Encrypt(UName, SYS_PASSWORD.c_str());
         
         strcpy(NewApplicant.UsrName, UName);
         strcpy(NewApplicant.PwdHash, UPwdHash);
@@ -1111,7 +834,7 @@ void newApplicant()
         NewApplicant.App.AppDet.SchDet.iscomplete = 0;
         NewApplicant.App.AppDet.Marks.iscomplete = 0;
         
-        Encrypt((char*)&NewApplicant.App, SYS_PASSWORD, sizeof(NewApplicant.App));
+        Encrypt((char*)&NewApplicant.App, SYS_PASSWORD.c_str(), sizeof(NewApplicant.App));
         
         fout.write((char*)&NewApplicant, sizeof(NewApplicant));
         
@@ -1142,7 +865,7 @@ void newManager()
     if (fin) {
         while (!fin.eof()) {
             fin.read((char*)&Check, sizeof(Check));
-            Decrypt(Check.UsrName, SYS_PASSWORD);
+            Decrypt(Check.UsrName, SYS_PASSWORD.c_str());
             if (!strcmp(Check.UsrName, UName)) {
                 flag = 0;
                 break;
@@ -1157,16 +880,16 @@ void newManager()
         cout << "Enter new Password : ";
         cin.ignore();
         cin.get(UPwd, 16);
-        UPwdHash = HashDigest(UPwd, 64);
+        UPwdHash = hashFunction.HashDigest(UPwd, 64);
 
-        Encrypt(UName, SYS_PASSWORD);
+        Encrypt(UName, SYS_PASSWORD.c_str());
         
         strcpy(NewManager.UsrName, UName);
         strcpy(NewManager.PwdHash, UPwdHash);
         
         NewManager.App.changePersDetails();
         
-        Encrypt((char*)&NewManager.App, SYS_PASSWORD, sizeof(Manager));
+        Encrypt((char*)&NewManager.App, SYS_PASSWORD.c_str(), sizeof(Manager));
         
         fout.write((char*)&NewManager, sizeof(ManagerPacket));
         
@@ -1200,7 +923,7 @@ void changePassword() {
         while (file.eof() == 0) {
             position = file.tellg();
             file.read((char*)&find, sizeof(Packet));
-            Decrypt((char*)&find.UsrName, SYS_PASSWORD);
+            Decrypt((char*)&find.UsrName, SYS_PASSWORD.c_str());
             
             if (!strcmp(UsrName, find.UsrName))
             {
@@ -1209,10 +932,10 @@ void changePassword() {
                 cin.ignore();
                 cin.get(newPassword, 16);
                 
-                temp = HashDigest(newPassword, 64);
+                temp = hashFunction.HashDigest(newPassword, 64);
                 
                 strcpy(find.PwdHash, temp);
-                Encrypt((char*)&find.UsrName, SYS_PASSWORD);
+                Encrypt((char*)&find.UsrName, SYS_PASSWORD.c_str());
                 delete[] temp;
                 
                 fout.seekp(position);
