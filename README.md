@@ -12,7 +12,7 @@ More details about the project can be found in the project report within this re
 ###How to run the project
 To run the project simply compile it with a C++ compiler such as g++ (if on mac, open terminal and type g++ main.cpp) and run the executable (note the absence of header files indicating a high school project) The *.dat files are local applications saved in binary format. 
 
-A very simple makefile that I created then is also included in the project. To use it type <font face = "courier">make</font> in terminal and then execute the executable named <font face = "courier">application<font> by doing <font face = "courier">./application</font>. Do <font face = "courier">make clean<font> followed to <font face = "courier">make</font> to recompile and rerun.
+A very simple makefile that I created then is also included in the project. To use it type `make` in terminal and then execute the executable named `application` by doing `./application`. Do `make clean` followed to `make` to recompile and rerun.
 <br>
 
 **Creators:** Aaryaman Sagar (mathematical foundations and Object Oriented Design), Aditya Sule (Object Oriented Design and general functionality)
