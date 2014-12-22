@@ -9,6 +9,6 @@ The project is meant to be a simple replica of an online university application 
 
 More details about the project can be found in the project report.
 
-
+<br>
 
 **Creators:** Aaryaman Sagar (mathematical foundations and Object Oriented Design), Aditya Sule (Object Oriented Design and general functionality)
