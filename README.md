@@ -14,5 +14,5 @@ To run the project simply compile it with a C++ compiler such as g++ (if on mac,
 
 A very simple makefile that I created then is also included in the project. To use it type `make` in terminal and then execute the executable named `application` by doing `./application`. Do `make clean` followed to `make` to recompile and rerun.
 <br>
-
+<br><br>
 **Creators:** Aaryaman Sagar (mathematical foundations and Object Oriented Design), Aditya Sule (Object Oriented Design and general functionality)
