@@ -5,3 +5,6 @@ all: main.cpp hash.h hash.cpp utilities.h utilities.cpp
 # make clean - remove .o files, executable, tarball
 clean:
 	rm -f application
+
+fresh:
+	rm -f application *.dat
