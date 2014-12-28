@@ -3,7 +3,7 @@ OnlineApplicationModel
 
 ###Basic Description
 Final high school project dealing with a self designed hash function using another self created pseudorandom number generator, an inheritance hierarchy, and binary file read/write
-____
+
 
 
 
