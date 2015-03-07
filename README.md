@@ -2,7 +2,7 @@ OnlineApplicationModel
 ================================
 
 ###Basic Description
-Final high school project dealing with a self designed hash function using another self created pseudorandom number generator, an inheritance hierarchy, and binary file read/write
+Project dealing with a self designed hash function using another self created pseudorandom number generator, an inheritance hierarchy, and binary file read/write
 
 
 
@@ -13,7 +13,7 @@ The project is meant to be a simple replica of an online university application 
 More details about the project can be found in the project report within this repository (projectReport.pdf).
 <br>
 ###How to run the project
-To run the project simply compile it with a C++ compiler such as g++ (if on mac, open terminal and type g++ main.cpp) and run the executable (note the absence of header files indicating a high school project) The *.dat files are local applications saved in binary format. 
+To run the project simply compile it with a C++ compiler such as g++ (if on mac, open terminal and type g++ main.cpp) and run the executable. The *.dat files are local applications saved in binary format. 
 
 A very simple makefile is also included in the project. To use it type `make` in terminal and then execute the executable named `application` by typing `./application`. Type `make clean` or `make fresh` (to delete all previous app data) followed by `make` to recompile and rerun.
 <br>
