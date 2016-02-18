@@ -7,4 +7,4 @@ To run the project simply compile it with a C++ compiler such as g++ (if on mac,
 A very simple makefile is also included in the project. To use it type `make` in terminal and then execute the executable named `application` by typing `./application`. Type `make clean` or `make fresh` (to delete all previous app data) followed by `make` to recompile and rerun.
 <br>
 <br><br>
-**Creators:** Aaryaman Sagar, Aditya Sule
+**Creators:** Aaryaman Sagar, [Aditya Sule](https://github.com/adityagnet)
